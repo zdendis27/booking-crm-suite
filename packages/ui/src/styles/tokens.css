@@ -1,0 +1,53 @@
+/*
+ * Design tokeny. Jediný zdroj barev, zaoblení, stínů a časování animací.
+ * Salon si může přebít --accent* na své rezervační stránce (branding).
+ * Definitivní paleta vznikne v kroku 0 – návrh design systému; zatím neutrální základ.
+ */
+:root {
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-muted: #f6f6f8;
+  --fg: #16161d;
+  --fg-muted: #5f6270;
+  --border: #e6e6ec;
+
+  --accent: #6d5efc;
+  --accent-fg: #ffffff;
+  --accent-soft: #efedff;
+
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --shadow-sm: 0 1px 2px rgb(16 16 32 / 0.06);
+  --shadow-md: 0 8px 24px rgb(16 16 32 / 0.08);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 240ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0d12;
+    --bg-elevated: #16161d;
+    --bg-muted: #1c1c25;
+    --fg: #f4f4f7;
+    --fg-muted: #a0a3b1;
+    --border: #2a2a36;
+    --accent-soft: #2a2650;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+  }
+}

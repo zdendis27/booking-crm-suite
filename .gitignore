@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build
+.next/
+out/
+dist/
+.turbo/
+*.tsbuildinfo
+
+# env (nikdy nekomitovat; vzor je .env.example)
+.env
+.env.*
+!.env.example
+
+# logs / os / editor
+*.log
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# supabase lokální
+supabase/.branches/
+supabase/.temp/
+
+# testy
+coverage/
+playwright-report/
+test-results/
