@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "@repo/ui/tokens.css";
 
-/* Tailwind musí prohledat i sdílený UI balíček */
 @source "../../../../packages/ui/src";
 
 @theme inline {

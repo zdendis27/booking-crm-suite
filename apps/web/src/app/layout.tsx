@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { brand, cs } from "@repo/copy";
 import "./globals.css";
 
-// latin-ext je nutný pro české znaky (ě, š, č, ř, ž, ý, á, í, é, ů, ú, ď, ť, ň)
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin", "latin-ext"],

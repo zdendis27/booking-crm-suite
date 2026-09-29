@@ -1,7 +1,3 @@
-/**
- * Peníze jsou vždy celé číslo v haléřích (1 Kč = 100). Nikdy desetinná čísla.
- * Formátování až na hranici UI.
- */
 export type Halere = number;
 
 export function korunyToHalere(koruny: number): Halere {

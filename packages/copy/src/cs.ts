@@ -1,7 +1,3 @@
-/**
- * Všechny uživatelské texty (česky). Nová obrazovka = nové klíče tady,
- * ne texty rozházené v komponentách.
- */
 export const cs = {
   common: {
     save: "Uložit",
