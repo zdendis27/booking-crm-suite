@@ -23,6 +23,9 @@ Vize: „Operační systém pro váš salon“ – rezervace → klient → náv
 | 14 | Repozitář a workflow | Sdílené repo `booking-crm-suite` (GitHub, `zdendis27`), commity **rovnou do `main`**, malé commity a `git pull --rebase` před pushem; viz `04-architektura.md` |
 | 15 | Vývojová DB | Cloudový projekt Supabase (bez Dockeru); prod projekt samostatně před pilotem |
 | 16 | Architektura a MVP | Viz `04-architektura.md` a `05-mvp-specifikace.md` (kroky 0–11) |
+| 17 | SMS ověření | Ověření telefonu SMS se zatím neřeší, ověřuje se e-mail. Politika `email_phone` je v databázi připravená |
+| 18 | Provize | Přednost má konkrétnější pravidlo (služba, produkt, kategorie, vše); při shodě pravidlo pracovníka před obecným |
+| 19 | Databáze | Vývojový Supabase v regionu Irsko, přístup přes Session pooler; nasazuje se `pnpm --filter @repo/db db:migrate` |
 
 ## Fáze (k doladění)
 

@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { asUser, createDb, type Db } from "./support/harness";
-import { seedSalon, type SeededSalon } from "./support/fixtures";
+import { pragueTs, seedSalon, type SeededSalon } from "./support/fixtures";
 
 let db: Db;
 let s: SeededSalon;
@@ -20,7 +20,7 @@ async function completedVisit(clientId = s.clientId, service = s.serviceId, when
   const id = await asUser(db, s.ownerId, async (tx) => {
     const r = await tx.query<{ id: string }>(
       "select public.admin_create_booking($1, $2, $3::jsonb, $4::timestamptz) as id",
-      [s.locationId, clientId, items(service), `${day} 10:00+02`],
+      [s.locationId, clientId, items(service), pragueTs(day, "10:00")],
     );
     return r.rows[0]!.id;
   });
@@ -76,7 +76,7 @@ describe("věrnostní razítka", () => {
     const id = await asUser(db, s.ownerId, async (tx) => {
       const r = await tx.query<{ id: string }>(
         "select public.admin_create_booking($1, $2, $3::jsonb, $4::timestamptz) as id",
-        [s.locationId, s.clientId, items(s.serviceId), `${day} 10:00+02`],
+        [s.locationId, s.clientId, items(s.serviceId), pragueTs(day, "10:00")],
       );
       return r.rows[0]!.id;
     });
@@ -89,7 +89,7 @@ describe("věrnostní razítka", () => {
     const bookingId = await asUser(db, s.ownerId, async (tx) => {
       const r = await tx.query<{ id: string }>(
         "select public.admin_create_booking($1, $2, $3::jsonb, $4::timestamptz) as id",
-        [s.locationId, s.clientId, items(s.serviceId), `${day} 10:00+02`],
+        [s.locationId, s.clientId, items(s.serviceId), pragueTs(day, "10:00")],
       );
       return r.rows[0]!.id;
     });
@@ -110,7 +110,7 @@ describe("věrnostní razítka", () => {
     const bookingId = await asUser(db, s.ownerId, async (tx) => {
       const r = await tx.query<{ id: string }>(
         "select public.admin_create_booking($1, $2, $3::jsonb, $4::timestamptz) as id",
-        [s.locationId, s.clientId, items(s.serviceId), `${day} 10:00+02`],
+        [s.locationId, s.clientId, items(s.serviceId), pragueTs(day, "10:00")],
       );
       return r.rows[0]!.id;
     });
@@ -129,7 +129,7 @@ describe("věrnostní razítka", () => {
     const bookingId = await asUser(db, s.ownerId, async (tx) => {
       const r = await tx.query<{ id: string }>(
         "select public.admin_create_booking($1, $2, $3::jsonb, $4::timestamptz) as id",
-        [s.locationId, s.clientId, items(s.serviceId), `${day} 11:00+02`],
+        [s.locationId, s.clientId, items(s.serviceId), pragueTs(day, "11:00")],
       );
       return r.rows[0]!.id;
     });

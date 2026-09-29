@@ -21,8 +21,13 @@ export function upcomingMonday(minDaysAhead = 7): string {
   return date.toISOString().slice(0, 10);
 }
 
-export function pragueInstant(day: string, time: string): string {
-  return `${day} ${time}`;
+const pragueOffset = new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Prague", timeZoneName: "longOffset" });
+
+export function pragueTs(day: string, time: string): string {
+  const probe = new Date(`${day}T12:00:00Z`);
+  const part = pragueOffset.formatToParts(probe).find((p) => p.type === "timeZoneName")!.value;
+  const offset = part.replace("GMT", "") || "+00:00";
+  return `${day} ${time}${offset}`;
 }
 
 export async function seedSalon(

@@ -7,11 +7,19 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "db:types": "tsx scripts/generate-types.ts"
+    "db:types": "tsx scripts/generate-types.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:status": "tsx scripts/migrate.ts --status",
+    "db:bundle": "tsx scripts/bundle.ts",
+    "db:seed": "tsx scripts/seed-demo.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@repo/config": "workspace:*",
+    "@supabase/supabase-js": "^2.117.2",
+    "@types/node": "^22",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.0",
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.2"

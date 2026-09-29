@@ -240,7 +240,7 @@ for each row execute function public.enforce_location_limit();
 create table public.salon_invites (
   id uuid primary key default gen_random_uuid(),
   salon_id uuid not null references public.salons (id) on delete cascade,
-  email extensions.citext not null,
+  email text not null,
   role public.salon_role not null check (role <> 'owner'),
   staff_id uuid,
   token_hash text not null unique,
@@ -300,6 +300,8 @@ begin
   return v_invite.salon_id;
 end
 $$;
+
+select public.attach_email_normalizer('public.salon_invites');
 
 -- Policies
 select public.apply_tenant_rls('public.staff',

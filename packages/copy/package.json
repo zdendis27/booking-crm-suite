@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
+    "@types/node": "^20",
     "typescript": "^5"
   }
 }

@@ -29,7 +29,7 @@ $$;
 create table public.customer_accounts (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null unique references auth.users (id) on delete cascade,
-  email extensions.citext,
+  email text,
   email_verified_at timestamptz,
   email_is_relay boolean not null default false,
   phone text check (phone is null or phone ~ '^\+42[01][0-9]{9}$'),
@@ -41,6 +41,7 @@ create table public.customer_accounts (
   updated_at timestamptz not null default now()
 );
 select public.attach_updated_at('public.customer_accounts');
+select public.attach_email_normalizer('public.customer_accounts');
 create unique index customer_accounts_verified_phone on public.customer_accounts (phone) where phone_verified_at is not null;
 create index customer_accounts_email_idx on public.customer_accounts (email);
 
@@ -60,7 +61,7 @@ begin
   insert into public.customer_accounts (
     user_id, email, email_verified_at, email_is_relay, phone, phone_verified_at, first_name, last_name
   ) values (
-    new.id, new.email, new.email_confirmed_at,
+    new.id, lower(new.email), new.email_confirmed_at,
     coalesce(new.email ilike '%@privaterelay.appleid.com', false),
     v_phone, case when v_phone is not null then new.phone_confirmed_at end, v_first, v_last
   )
@@ -114,7 +115,7 @@ create table public.clients (
   last_name text not null default '',
   full_name text generated always as (btrim(first_name || ' ' || last_name)) stored,
   phone text check (phone is null or phone ~ '^\+[0-9]{8,15}$'),
-  email extensions.citext,
+  email text,
   phone_verified_at timestamptz,
   email_verified_at timestamptz,
   birthday date,
@@ -126,6 +127,7 @@ create table public.clients (
   unique (id, salon_id)
 );
 select public.attach_updated_at('public.clients');
+select public.attach_email_normalizer('public.clients');
 create unique index clients_account_unique on public.clients (salon_id, customer_account_id) where customer_account_id is not null and merged_into is null;
 create unique index clients_phone_unique on public.clients (salon_id, phone) where phone is not null and merged_into is null and anonymized_at is null;
 create index clients_salon_idx on public.clients (salon_id) where merged_into is null;
@@ -342,8 +344,8 @@ begin
     update public.customer_accounts set phone = p_target, phone_verified_at = now() where id = p_account;
     update public.clients set phone_verified_at = now() where customer_account_id = p_account and phone = p_target;
   else
-    update public.customer_accounts set email_verified_at = now() where id = p_account and email = p_target;
-    update public.clients set email_verified_at = now() where customer_account_id = p_account and email = p_target;
+    update public.customer_accounts set email_verified_at = now() where id = p_account and lower(email) = lower(p_target);
+    update public.clients set email_verified_at = now() where customer_account_id = p_account and lower(email) = lower(p_target);
   end if;
   return true;
 end

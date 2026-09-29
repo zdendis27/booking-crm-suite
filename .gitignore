@@ -30,3 +30,4 @@ supabase/.temp/
 coverage/
 playwright-report/
 test-results/
+supabase/bundle.sql

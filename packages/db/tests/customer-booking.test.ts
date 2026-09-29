@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { asUser, createDb, createUser, type Db } from "./support/harness";
-import { seedSalon, type SeededSalon } from "./support/fixtures";
+import { pragueTs, seedSalon, type SeededSalon } from "./support/fixtures";
 
 let db: Db;
 let auto: SeededSalon;
@@ -10,7 +10,7 @@ let strict: SeededSalon;
 const items = (s: SeededSalon, ...services: string[]) =>
   JSON.stringify(services.map((service_id) => ({ service_id, staff_id: s.staffId })));
 
-const at = (day: string, time: string) => `${day} ${time}+02`;
+const at = pragueTs;
 
 async function customer(email: string, phone?: string) {
   const userId = await createUser(db, email);

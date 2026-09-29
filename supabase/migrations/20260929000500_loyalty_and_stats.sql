@@ -414,7 +414,7 @@ begin
     p_client, v_salon, v_visits,
     (select count(*) from public.bookings where client_id = p_client and status = 'no_show'),
     (select count(*) from public.bookings where client_id = p_client and status = 'cancelled_by_client'),
-    coalesce((select sum(price_total - discount_total) from public.bookings where client_id = p_client and status = 'completed'), 0),
+    coalesce((select sum(price_total - discount_total + products_total) from public.bookings where client_id = p_client and status = 'completed'), 0),
     (select min(starts_at) from public.bookings where client_id = p_client and status = 'completed'),
     v_last,
     case when v_visits >= 3 then round(v_avg, 2) end,

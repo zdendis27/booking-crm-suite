@@ -18,6 +18,7 @@ create table public.bookings (
   ends_at timestamptz not null,
   price_total bigint not null default 0 check (price_total >= 0),
   discount_total bigint not null default 0 check (discount_total >= 0),
+  products_total bigint not null default 0 check (products_total >= 0),
   client_note text,
   internal_note text,
   cancel_reason text,
@@ -395,14 +396,14 @@ begin
   where salon_id = p_salon and customer_account_id is null and merged_into is null and anonymized_at is null
     and (
       (v_account.phone_verified_at is not null and phone = v_account.phone)
-      or (v_account.email_verified_at is not null and email = v_account.email)
+      or (v_account.email_verified_at is not null and lower(email) = lower(v_account.email))
     )
   order by created_at limit 1;
   if found then
     update public.clients set
       customer_account_id = p_account,
       phone_verified_at = case when phone = v_account.phone then v_account.phone_verified_at else phone_verified_at end,
-      email_verified_at = case when email = v_account.email then v_account.email_verified_at else email_verified_at end
+      email_verified_at = case when lower(email) = lower(v_account.email) then v_account.email_verified_at else email_verified_at end
     where id = v_client;
     return v_client;
   end if;

@@ -3,7 +3,6 @@ create schema if not exists extensions;
 create extension if not exists btree_gist with schema extensions;
 create extension if not exists pg_trgm with schema extensions;
 create extension if not exists unaccent with schema extensions;
-create extension if not exists citext with schema extensions;
 
 -- Types
 create type public.salon_role as enum ('owner', 'manager', 'reception', 'staff');
@@ -25,6 +24,31 @@ language plpgsql as $$
 begin
   execute format(
     'create trigger set_updated_at before update on %s for each row execute function public.set_updated_at()',
+    p_table
+  );
+end
+$$;
+
+create function public.normalize_email() returns trigger
+language plpgsql as $$
+declare
+  v_key text;
+  v_row jsonb := to_jsonb(new);
+begin
+  foreach v_key in array array['email', 'customer_email', 'recipient_email'] loop
+    if v_row ? v_key and v_row ->> v_key is not null then
+      new := jsonb_populate_record(new, jsonb_build_object(v_key, lower(btrim(v_row ->> v_key))));
+    end if;
+  end loop;
+  return new;
+end
+$$;
+
+create function public.attach_email_normalizer(p_table regclass) returns void
+language plpgsql as $$
+begin
+  execute format(
+    'create trigger normalize_email before insert or update on %s for each row execute function public.normalize_email()',
     p_table
   );
 end
@@ -63,7 +87,7 @@ create policy plans_read on public.plans for select to anon, authenticated using
 create table public.salons (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 2 and 80),
-  slug extensions.citext not null unique check (slug::text ~ '^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$'),
+  slug text not null unique check (slug ~ '^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$'),
   timezone text not null default 'Europe/Prague',
   currency text not null default 'CZK',
   status public.salon_status not null default 'trial',
@@ -71,7 +95,7 @@ create table public.salons (
   verification_policy public.verification_policy not null default 'email',
   description text,
   phone text,
-  email extensions.citext,
+  email text check (email is null or email = lower(email)),
   website text,
   instagram text,
   address_street text,
@@ -87,6 +111,7 @@ create table public.salons (
   archived_at timestamptz
 );
 select public.attach_updated_at('public.salons');
+select public.attach_email_normalizer('public.salons');
 
 create table public.salon_billing_profiles (
   salon_id uuid primary key references public.salons (id) on delete cascade,
@@ -133,7 +158,7 @@ create table public.locations (
   lat numeric(9, 6),
   lng numeric(9, 6),
   phone text,
-  email extensions.citext,
+  email text check (email is null or email = lower(email)),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   archived_at timestamptz,
@@ -141,6 +166,7 @@ create table public.locations (
   unique (id, salon_id)
 );
 select public.attach_updated_at('public.locations');
+select public.attach_email_normalizer('public.locations');
 create index locations_salon_idx on public.locations (salon_id);
 
 create table public.location_hours (
@@ -253,6 +279,7 @@ $$;
 
 revoke execute on function public.apply_tenant_rls(regclass, public.salon_role[], public.salon_role[]) from public, anon, authenticated;
 revoke execute on function public.attach_updated_at(regclass) from public, anon, authenticated;
+revoke execute on function public.attach_email_normalizer(regclass) from public, anon, authenticated;
 
 -- Audit helper
 create function public.write_audit(

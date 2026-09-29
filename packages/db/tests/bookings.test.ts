@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { asUser, createDb, createUser, type Db } from "./support/harness";
-import { seedSalon, type SeededSalon } from "./support/fixtures";
+import { pragueTs, seedSalon, type SeededSalon } from "./support/fixtures";
 
 let db: Db;
 let s: SeededSalon;
@@ -8,7 +8,7 @@ let s: SeededSalon;
 const items = (...pairs: [string, string][]) =>
   JSON.stringify(pairs.map(([service_id, staff_id]) => ({ service_id, staff_id })));
 
-const at = (day: string, time: string) => `${day} ${time}+02`;
+const at = pragueTs;
 
 async function slots(serviceIds: string[], day: string, staff: string | null = null) {
   const result = await db.query<{ local: string }>(
@@ -192,7 +192,7 @@ describe("dovolená a výjimky", () => {
     expect((await slots([s.serviceId], tuesday)).length).toBeGreaterThan(0);
     await db.query(
       "insert into public.staff_time_off (salon_id, staff_id, during, kind) values ($1, $2, tstzrange($3::timestamptz, $4::timestamptz, '[)'), 'vacation')",
-      [s.salonId, s.staffId, `${tuesday} 00:00+02`, `${tuesday} 23:59+02`],
+      [s.salonId, s.staffId, at(tuesday, "00:00"), at(tuesday, "23:59")],
     );
     expect(await slots([s.serviceId], tuesday)).toHaveLength(0);
   });
